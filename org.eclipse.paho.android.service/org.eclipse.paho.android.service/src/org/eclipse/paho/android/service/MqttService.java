@@ -751,7 +751,7 @@ public class MqttService extends Service implements MqttTraceHandler {
 		if (Build.VERSION.SDK_INT < 14 /**Build.VERSION_CODES.ICE_CREAM_SANDWICH**/) {
 			// Support the old system for background data preferences
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-			backgroundDataEnabled = cm.getBackgroundDataSetting();
+            backgroundDataEnabled = cm != null ? cm.getBackgroundDataSetting() : true;
 			if (backgroundDataPreferenceMonitor == null) {
 				backgroundDataPreferenceMonitor = new BackgroundDataPreferenceReceiver();
 				registerReceiver(
@@ -811,7 +811,7 @@ public class MqttService extends Service implements MqttTraceHandler {
 	 */
 	public boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		if (cm.getActiveNetworkInfo() != null
+		if (cm != null && cm.getActiveNetworkInfo() != null
 				&& cm.getActiveNetworkInfo().isAvailable()
 				&& cm.getActiveNetworkInfo().isConnected()
 				&& backgroundDataEnabled) {
@@ -841,7 +841,7 @@ public class MqttService extends Service implements MqttTraceHandler {
 		public void onReceive(Context context, Intent intent) {
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 			traceDebug(TAG,"Reconnect since BroadcastReceiver.");
-			if (cm.getBackgroundDataSetting()) {
+			if (cm != null && cm.getBackgroundDataSetting()) {
 				if (!backgroundDataEnabled) {
 					backgroundDataEnabled = true;
 					// we have the Internet connection - have another try at
